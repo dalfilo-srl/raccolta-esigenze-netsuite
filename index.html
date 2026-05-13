@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raccolta Esigenze NetSuite — OPS &amp; Finance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F1EA;
+    --bg-card: #FFFFFF;
+    --bg-soft: #EDE6DA;
+    --ink: #1F1B16;
+    --ink-soft: #6B635A;
+    --ink-mute: #9A938A;
+    --line: #D9D1C2;
+    --line-soft: #E8E1D3;
+    --accent: #8B3A2B;
+    --accent-soft: #F1DDD6;
+    --teal: #2C5F5D;
+    --teal-soft: #DCE7E6;
+    --gold: #B58B3C;
+    --gold-soft: #F2E5C9;
+    --danger: #8B2929;
+    --radius: 6px;
+    --radius-lg: 10px;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 10% 10%, rgba(139,58,43,0.04) 0, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(44,95,93,0.04) 0, transparent 40%);
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 48px 32px 80px; }
+
+  /* Header */
+  header {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 28px;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .brand-mark {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 38px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-top: 10px;
+    max-width: 520px;
+  }
+  .header-meta {
+    text-align: right;
+    font-size: 12px;
+    color: var(--ink-mute);
+    letter-spacing: 0.05em;
+  }
+  .header-meta .count-big {
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: var(--ink);
+    line-height: 1;
+    font-weight: 500;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tab {
+    background: none;
+    border: none;
+    padding: 10px 18px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.15s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+    font-weight: 500;
+  }
+  .tab-count {
+    display: inline-block;
+    background: var(--bg-soft);
+    color: var(--ink-soft);
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+    font-weight: 500;
+  }
+
+  /* Actions bar */
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    align-items: center;
+  }
+  .actions-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* Buttons */
+  button, .btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg-card);
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+  }
+  button:hover { background: var(--bg-soft); border-color: var(--ink-mute); }
+  button:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+  .btn-primary:hover { background: var(--accent); border-color: var(--accent); }
+  .btn-accent {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .btn-accent:hover { background: #6F2D21; border-color: #6F2D21; }
+  .btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--ink-soft);
+  }
+  .btn-ghost:hover { background: var(--bg-soft); color: var(--ink); }
+  .btn-danger { color: var(--danger); }
+  .btn-danger:hover { background: #F5E5E5; border-color: var(--danger); }
+
+  /* Form Card */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 32px 36px;
+    box-shadow: 0 1px 0 rgba(31,27,22,0.02), 0 6px 20px rgba(31,27,22,0.04);
+  }
+  .form-section {
+    margin-bottom: 22px;
+  }
+  .form-section-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .field label .req { color: var(--accent); margin-left: 2px; }
+  input[type="text"], textarea, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--bg-card);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input[type="text"]:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B635A' d='M6 8.5L2 4.5h8z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .compare-box {
+    border-radius: var(--radius);
+    padding: 14px;
+    border: 1px solid;
+  }
+  .compare-box.now { background: var(--bg-soft); border-color: var(--line); }
+  .compare-box.future { background: var(--teal-soft); border-color: #B8CECD; }
+  .compare-box label { color: var(--ink); font-weight: 600; }
+  .compare-box.now label::before { content: "› "; color: var(--ink-mute); }
+  .compare-box.future label::before { content: "✦ "; color: var(--teal); }
+  .compare-box textarea { background: var(--bg-card); border-color: transparent; }
+
+  .form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  /* List view */
+  .list-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+  }
+  .list-controls select { width: auto; padding: 6px 28px 6px 10px; font-size: 13px; }
+  .list-controls label { font-size: 12px; color: var(--ink-soft); display: flex; align-items: center; gap: 6px; }
+
+  .req-list { display: flex; flex-direction: column; gap: 12px; }
+  .req-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 22px 26px;
+    position: relative;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .req-card:hover { border-color: var(--ink-mute); }
+  .req-card .priority-strip {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  }
+  .req-card.p-alta .priority-strip { background: var(--accent); }
+  .req-card.p-media .priority-strip { background: var(--gold); }
+  .req-card.p-bassa .priority-strip { background: var(--teal); }
+
+  .req-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .req-title {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    line-height: 1.25;
+  }
+  .req-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .pill {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .pill-ops { background: var(--teal-soft); color: var(--teal); }
+  .pill-fin { background: var(--gold-soft); color: #6E5320; }
+  .pill-alta { background: var(--accent-soft); color: var(--accent); }
+  .pill-media { background: #F5EAD3; color: #6E5320; }
+  .pill-bassa { background: var(--teal-soft); color: var(--teal); }
+  .pill-freq { background: var(--bg-soft); color: var(--ink-soft); }
+  .pill-author { background: transparent; color: var(--ink-mute); text-transform: none; letter-spacing: 0; }
+
+  .req-body { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .req-block {
+    background: var(--bg-soft);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .req-block.future { background: var(--teal-soft); }
+  .req-block-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-mute);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .req-block.future .req-block-label { color: var(--teal); }
+  .req-impact {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding-left: 12px;
+    border-left: 2px solid var(--gold);
+    font-style: italic;
+    font-family: var(--font-display);
+  }
+  .req-actions {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .req-actions button { padding: 6px 12px; font-size: 12px; }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-mute);
+  }
+  .empty-mark {
+    font-family: var(--font-display);
+    font-size: 56px;
+    color: var(--line);
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .empty p { font-size: 14px; max-width: 340px; margin: 8px auto 0; }
+
+  /* Summary / Plan view */
+  .summary-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .stat {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    font-weight: 500;
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-top: 4px;
+  }
+  .stat.accent .stat-value { color: var(--accent); }
+  .stat.teal .stat-value { color: var(--teal); }
+  .stat.gold .stat-value { color: var(--gold); }
+
+  .plan-section { margin-bottom: 32px; }
+  .plan-section-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .plan-section-title::before {
+    content: "";
+    width: 24px; height: 2px;
+    background: var(--accent);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(31,27,22,0.5);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    max-width: 720px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 32px 36px;
+  }
+  .modal h2 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .modal pre {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    color: var(--ink);
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 200;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .wrap { padding: 28px 18px 60px; }
+    h1 { font-size: 28px; }
+    .card { padding: 22px 20px; }
+    .form-grid, .compare-grid, .req-body, .summary-stats { grid-template-columns: 1fr; }
+    .summary-stats { grid-template-columns: 1fr 1fr; }
+    header { flex-direction: column; align-items: flex-start; }
+    .header-meta { text-align: left; }
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="brand-mark">Dalfilo · Strumento Interno</div>
+    <h1>Raccolta esigenze<br><em>OPS &amp; Finance</em> · NetSuite</h1>
+    <p class="subtitle">Compila il modulo per descrivere come funziona oggi un processo in NetSuite e come dovrebbe funzionare. Le esigenze raccolte verranno trasformate in un piano di lavoro condiviso.</p>
+  </div>
+  <div class="header-meta">
+    <div class="count-big" id="header-count">0</div>
+    <div>esigenze raccolte</div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="form"><i></i>Nuova esigenza</button>
+  <button class="tab" data-tab="list">Elenco<span class="tab-count" id="tab-count">0</span></button>
+  <button class="tab" data-tab="plan">Piano &amp; Sintesi</button>
+  <div class="actions" style="margin-left: auto; padding-bottom: 6px;">
+    <button class="btn-ghost" id="btn-export" title="Esporta tutto"><span>Esporta</span> ↓</button>
+    <button class="btn-ghost" id="btn-import" title="Importa JSON">Importa ↑</button>
+    <input type="file" id="file-import" accept=".json" style="display:none">
+  </div>
+</nav>
+
+<!-- ============ FORM VIEW ============ -->
+<section id="view-form">
+  <div class="card">
+
+    <div class="form-section">
+      <div class="form-section-title">Identificazione</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Dipartimento <span class="req">*</span></label>
+          <select id="f-dept">
+            <option value="">— Seleziona —</option>
+            <option value="OPS">OPS — Operations</option>
+            <option value="Finance">Finance — Amministrazione</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Compilato da</label>
+          <input type="text" id="f-author" placeholder="Nome e cognome del referente">
+        </div>
+      </div>
+      <div class="field">
+        <label>Titolo dell'esigenza <span class="req">*</span></label>
+        <input type="text" id="f-title" placeholder="Es. Riconciliazione automatica dei pagamenti POS in NetSuite">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Stato attuale e desiderato</div>
+      <div class="compare-grid">
+        <div class="compare-box now">
+          <div class="field" style="margin-bottom:0;">
+            <label>Come funziona oggi</label>
+            <textarea id="f-current" rows="4" placeholder="Descrivi il processo attuale: passaggi manuali, strumenti usati, criticità, tempi..."></textarea>
+          </div>
+        </div>
+        <div class="compare-box future">
+          <div class="field" style="margin-bottom:0;">
+            <label>Come dovrebbe funzionare</label>
+            <textarea id="f-desired" rows="4" placeholder="Descrivi il comportamento ideale: automazioni desiderate, risultato atteso, semplificazioni..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Impatto e classificazione</div>
+      <div class="field">
+        <label>Beneficio atteso / Impatto</label>
+        <textarea id="f-impact" rows="2" placeholder="Es. Risparmio di 4h a settimana, eliminazione errori in chiusura mensile, maggiore tracciabilità..."></textarea>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Frequenza d'uso del processo</label>
+          <select id="f-frequency">
+            <option value="">— Seleziona —</option>
+            <option value="Quotidiana">Quotidiana</option>
+            <option value="Settimanale">Settimanale</option>
+            <option value="Mensile">Mensile</option>
+            <option value="Trimestrale">Trimestrale</option>
+            <option value="Occasionale">Occasionale</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Priorità <span class="req">*</span></label>
+          <select id="f-priority">
+            <option value="">— Seleziona —</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Bassa">Bassa</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      <button class="btn-ghost hidden" id="btn-cancel">Annulla modifica</button>
+      <button class="btn-accent" id="btn-save"><span id="btn-save-text">Salva esigenza</span> →</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ LIST VIEW ============ -->
+<section id="view-list" class="hidden">
+  <div class="list-controls">
+    <label>Dipartimento
+      <select id="filter-dept">
+        <option value="">Tutti</option>
+        <option value="OPS">OPS</option>
+        <option value="Finance">Finance</option>
+      </select>
+    </label>
+    <label>Priorità
+      <select id="filter-priority">
+        <option value="">Tutte</option>
+        <option value="Alta">Alta</option>
+        <option value="Media">Media</option>
+        <option value="Bassa">Bassa</option>
+      </select>
+    </label>
+    <label>Ordina
+      <select id="sort-by">
+        <option value="priority">Per priorità</option>
+        <option value="dept">Per dipartimento</option>
+        <option value="recent">Più recenti</option>
+        <option value="frequency">Per frequenza</option>
+      </select>
+    </label>
+    <div style="margin-left:auto; font-size: 12px; color: var(--ink-mute);" id="filter-info"></div>
+  </div>
+
+  <div class="req-list" id="req-list"></div>
+  <div class="empty hidden" id="empty-list">
+    <div class="empty-mark">∅</div>
+    <p>Nessuna esigenza registrata. Inizia compilando il modulo nella prima scheda.</p>
+  </div>
+</section>
+
+<!-- ============ PLAN VIEW ============ -->
+<section id="view-plan" class="hidden">
+  <div class="summary-stats">
+    <div class="stat"><div class="stat-label">Totale</div><div class="stat-value" id="stat-total">0</div></div>
+    <div class="stat accent"><div class="stat-label">Priorità alta</div><div class="stat-value" id="stat-alta">0</div></div>
+    <div class="stat teal"><div class="stat-label">OPS</div><div class="stat-value" id="stat-ops">0</div></div>
+    <div class="stat gold"><div class="stat-label">Finance</div><div class="stat-value" id="stat-fin">0</div></div>
+  </div>
+
+  <div class="plan-section">
+    <h2 class="plan-section-title">Piano per Asana</h2>
+    <p style="color: var(--ink-soft); margin-bottom: 16px; font-size: 14px;">
+      Genera un riepilogo strutturato per sezioni (Priorità o Dipartimento), pronto da inviare ad Antonio per la creazione del progetto Asana.
+    </p>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+      <button id="btn-plan-priority" class="btn-primary">Piano per priorità</button>
+      <button id="btn-plan-dept">Piano per dipartimento</button>
+      <button id="btn-export-csv">Esporta CSV</button>
+    </div>
+    <div id="plan-output" style="display:none;">
+      <div style="background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; font-size: 13px; line-height: 1.7;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span style="font-family: var(--font-display); font-size: 16px; font-weight: 500;" id="plan-title">Piano</span>
+          <button class="btn-ghost" id="btn-copy-plan">Copia ⧉</button>
+        </div>
+        <pre id="plan-content" style="background: var(--bg); border: 1px solid var(--line-soft); border-radius: var(--radius); padding: 14px; font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; line-height: 1.6; white-space: pre-wrap; max-height: 60vh; overflow-y: auto;"></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="plan-section">
+    <h2 class="plan-section-title">Gestione dati</h2>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <button id="btn-clear-all" class="btn-danger">Azzera tutto</button>
+    </div>
+    <p style="font-size: 12px; color: var(--ink-mute); margin-top: 10px;">
+      I dati sono salvati nel browser locale. Esporta regolarmente in JSON per condividerli o conservarli.
+    </p>
+  </div>
+</section>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2 id="modal-title">Esporta</h2>
+    <div id="modal-body"></div>
+    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
+      <button id="modal-close">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'dalfilo.esigenze.v1';
+let items = [];
+let editingId = null;
+
+const $ = id => document.getElementById(id);
+const $$ = sel => document.querySelectorAll(sel);
+
+// ============ STORAGE ============
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    items = raw ? JSON.parse(raw) : [];
+  } catch (e) { items = []; }
+  updateCounts();
+}
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+  catch (e) { toast('Errore di salvataggio'); }
+}
+
+// ============ UTILS ============
+function uid() { return 'r_' + Date.now() + '_' + Math.floor(Math.random()*9999); }
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ============ TABS ============
+$$('.tab').forEach(t => t.addEventListener('click', () => {
+  $$('.tab').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  const v = t.dataset.tab;
+  $('view-form').classList.toggle('hidden', v !== 'form');
+  $('view-list').classList.toggle('hidden', v !== 'list');
+  $('view-plan').classList.toggle('hidden', v !== 'plan');
+  if (v === 'list') renderList();
+  if (v === 'plan') renderPlan();
+}));
+
+// ============ COUNTS ============
+function updateCounts() {
+  $('header-count').textContent = items.length;
+  $('tab-count').textContent = items.length;
+  $('stat-total').textContent = items.length;
+  $('stat-alta').textContent = items.filter(i => i.priority === 'Alta').length;
+  $('stat-ops').textContent = items.filter(i => i.dept === 'OPS').length;
+  $('stat-fin').textContent = items.filter(i => i.dept === 'Finance').length;
+}
+
+// ============ FORM ============
+function clearForm() {
+  ['f-dept','f-author','f-title','f-current','f-desired','f-impact','f-frequency','f-priority']
+    .forEach(id => $(id).value = '');
+  editingId = null;
+  $('btn-save-text').textContent = 'Salva esigenza';
+  $('btn-cancel').classList.add('hidden');
+}
+function fillForm(item) {
+  $('f-dept').value = item.dept || '';
+  $('f-author').value = item.author || '';
+  $('f-title').value = item.title || '';
+  $('f-current').value = item.current || '';
+  $('f-desired').value = item.desired || '';
+  $('f-impact').value = item.impact || '';
+  $('f-frequency').value = item.frequency || '';
+  $('f-priority').value = item.priority || '';
+  editingId = item.id;
+  $('btn-save-text').textContent = 'Aggiorna esigenza';
+  $('btn-cancel').classList.remove('hidden');
+  $$('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelector('[data-tab="form"]').classList.add('active');
+  $('view-form').classList.remove('hidden');
+  $('view-list').classList.add('hidden');
+  $('view-plan').classList.add('hidden');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+$('btn-save').addEventListener('click', () => {
+  const data = {
+    dept: $('f-dept').value,
+    author: $('f-author').value.trim(),
+    title: $('f-title').value.trim(),
+    current: $('f-current').value.trim(),
+    desired: $('f-desired').value.trim(),
+    impact: $('f-impact').value.trim(),
+    frequency: $('f-frequency').value,
+    priority: $('f-priority').value
+  };
+  if (!data.dept || !data.title || !data.priority) {
+    toast('Compila almeno: Dipartimento, Titolo e Priorità');
+    return;
+  }
+  if (editingId) {
+    const idx = items.findIndex(x => x.id === editingId);
+    if (idx >= 0) items[idx] = Object.assign({}, items[idx], data, {updatedAt: new Date().toISOString()});
+    toast('Esigenza aggiornata');
+  } else {
+    data.id = uid();
+    data.createdAt = new Date().toISOString();
+    items.push(data);
+    toast('Esigenza salvata');
+  }
+  save();
+  updateCounts();
+  clearForm();
+  // Switch to list
+  $$('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelector('[data-tab="list"]').classList.add('active');
+  $('view-form').classList.add('hidden');
+  $('view-list').classList.remove('hidden');
+  $('view-plan').classList.add('hidden');
+  renderList();
+});
+
+$('btn-cancel').addEventListener('click', clearForm);
+
+// ============ LIST ============
+['filter-dept','filter-priority','sort-by'].forEach(id => $(id).addEventListener('change', renderList));
+
+function renderList() {
+  const fd = $('filter-dept').value;
+  const fp = $('filter-priority').value;
+  const sort = $('sort-by').value;
+  let list = items.slice();
+  if (fd) list = list.filter(x => x.dept === fd);
+  if (fp) list = list.filter(x => x.priority === fp);
+
+  const pOrder = {'Alta':0,'Media':1,'Bassa':2};
+  const fOrder = {'Quotidiana':0,'Settimanale':1,'Mensile':2,'Trimestrale':3,'Occasionale':4};
+
+  if (sort === 'priority') list.sort((a,b) => (pOrder[a.priority]??9) - (pOrder[b.priority]??9));
+  else if (sort === 'dept') list.sort((a,b) => (a.dept||'').localeCompare(b.dept||''));
+  else if (sort === 'recent') list.sort((a,b) => (b.createdAt||'').localeCompare(a.createdAt||''));
+  else if (sort === 'frequency') list.sort((a,b) => (fOrder[a.frequency]??9) - (fOrder[b.frequency]??9));
+
+  $('filter-info').textContent = list.length + ' di ' + items.length + ' esigenze';
+  const container = $('req-list');
+  container.innerHTML = '';
+  $('empty-list').classList.toggle('hidden', list.length !== 0);
+
+  list.forEach(item => {
+    const deptCls = item.dept === 'OPS' ? 'pill-ops' : 'pill-fin';
+    const prCls = 'pill-' + (item.priority||'').toLowerCase();
+    const cardCls = 'p-' + (item.priority||'').toLowerCase();
+
+    const el = document.createElement('div');
+    el.className = 'req-card ' + cardCls;
+    el.innerHTML = `
+      <div class="priority-strip"></div>
+      <div class="req-head">
+        <div style="flex:1;">
+          <div class="req-title">${esc(item.title)}</div>
+          <div class="req-meta">
+            <span class="pill ${deptCls}">${esc(item.dept)}</span>
+            <span class="pill ${prCls}">Priorità ${esc(item.priority)}</span>
+            ${item.frequency ? `<span class="pill pill-freq">${esc(item.frequency)}</span>` : ''}
+            ${item.author ? `<span class="pill pill-author">— ${esc(item.author)}</span>` : ''}
+          </div>
+        </div>
+      </div>
+      ${(item.current || item.desired) ? `
+      <div class="req-body">
+        ${item.current ? `<div class="req-block"><div class="req-block-label">Oggi</div>${esc(item.current)}</div>` : ''}
+        ${item.desired ? `<div class="req-block future"><div class="req-block-label">Desiderato</div>${esc(item.desired)}</div>` : ''}
+      </div>` : ''}
+      ${item.impact ? `<div class="req-impact">${esc(item.impact)}</div>` : ''}
+      <div class="req-actions">
+        <button data-edit="${item.id}">Modifica</button>
+        <button class="btn-danger" data-del="${item.id}">Elimina</button>
+      </div>
+    `;
+    container.appendChild(el);
+  });
+
+  container.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => {
+    const it = items.find(x => x.id === b.dataset.edit);
+    if (it) fillForm(it);
+  }));
+  container.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+    if (!confirm('Eliminare questa esigenza?')) return;
+    items = items.filter(x => x.id !== b.dataset.del);
+    save(); updateCounts(); renderList();
+    toast('Esigenza eliminata');
+  }));
+}
+
+// ============ PLAN ============
+function renderPlan() { updateCounts(); }
+
+function buildPlan(groupBy) {
+  const pOrder = {'Alta':0,'Media':1,'Bassa':2};
+  const sorted = items.slice().sort((a,b) => (pOrder[a.priority]??9) - (pOrder[b.priority]??9));
+
+  const groups = {};
+  sorted.forEach(i => {
+    const k = groupBy === 'priority' ? ('Priorità ' + i.priority) : i.dept;
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(i);
+  });
+
+  const order = groupBy === 'priority'
+    ? ['Priorità Alta','Priorità Media','Priorità Bassa']
+    : ['OPS','Finance'];
+
+  let out = 'PIANO DI MIGLIORAMENTO NETSUITE — DALFILO\n';
+  out += 'Raggruppamento: ' + (groupBy === 'priority' ? 'per priorità' : 'per dipartimento') + '\n';
+  out += 'Data generazione: ' + new Date().toLocaleString('it-IT') + '\n';
+  out += 'Totale esigenze: ' + items.length + '\n';
+  out += '═'.repeat(60) + '\n\n';
+
+  order.forEach(g => {
+    if (!groups[g] || groups[g].length === 0) return;
+    out += '▸ ' + g.toUpperCase() + ' (' + groups[g].length + ')\n';
+    out += '─'.repeat(60) + '\n';
+    groups[g].forEach((i, idx) => {
+      out += '\n  ' + (idx+1) + '. ' + i.title + '\n';
+      out += '     Dip.: ' + i.dept + '  |  Priorità: ' + i.priority;
+      if (i.frequency) out += '  |  Frequenza: ' + i.frequency;
+      if (i.author) out += '  |  Da: ' + i.author;
+      out += '\n';
+      if (i.current)  out += '     ◦ Oggi:        ' + i.current.replace(/\n/g,'\n                    ') + '\n';
+      if (i.desired)  out += '     ◦ Desiderato:  ' + i.desired.replace(/\n/g,'\n                    ') + '\n';
+      if (i.impact)   out += '     ◦ Beneficio:   ' + i.impact.replace(/\n/g,'\n                    ') + '\n';
+    });
+    out += '\n';
+  });
+  return out;
+}
+
+$('btn-plan-priority').addEventListener('click', () => {
+  if (items.length === 0) { toast('Nessuna esigenza da pianificare'); return; }
+  $('plan-title').textContent = 'Piano per priorità';
+  $('plan-content').textContent = buildPlan('priority');
+  $('plan-output').style.display = 'block';
+});
+$('btn-plan-dept').addEventListener('click', () => {
+  if (items.length === 0) { toast('Nessuna esigenza da pianificare'); return; }
+  $('plan-title').textContent = 'Piano per dipartimento';
+  $('plan-content').textContent = buildPlan('dept');
+  $('plan-output').style.display = 'block';
+});
+$('btn-copy-plan').addEventListener('click', () => {
+  const text = $('plan-content').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('Piano copiato negli appunti'));
+});
+
+// ============ EXPORT / IMPORT ============
+$('btn-export').addEventListener('click', () => {
+  const data = JSON.stringify({version:1, exportedAt: new Date().toISOString(), items}, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'esigenze-netsuite-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Export completato');
+});
+
+$('btn-export-csv').addEventListener('click', () => {
+  if (items.length === 0) { toast('Nessuna esigenza da esportare'); return; }
+  const headers = ['Dipartimento','Priorità','Titolo','Oggi','Desiderato','Beneficio','Frequenza','Compilato da','Data creazione'];
+  const rows = items.map(i => [
+    i.dept || '', i.priority || '', i.title || '', i.current || '',
+    i.desired || '', i.impact || '', i.frequency || '', i.author || '',
+    i.createdAt ? new Date(i.createdAt).toLocaleString('it-IT') : ''
+  ]);
+  const csvEscape = v => '"' + String(v).replace(/"/g,'""').replace(/\n/g,' ') + '"';
+  const csv = '\uFEFF' + [headers.map(csvEscape).join(';'), ...rows.map(r => r.map(csvEscape).join(';'))].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'esigenze-netsuite-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV esportato');
+});
+
+$('btn-import').addEventListener('click', () => $('file-import').click());
+$('file-import').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      const list = Array.isArray(data) ? data : (data.items || []);
+      if (!Array.isArray(list)) throw new Error('formato non valido');
+      if (!confirm('Importare ' + list.length + ' esigenze? Verranno aggiunte a quelle esistenti.')) return;
+      list.forEach(it => {
+        if (!it.id) it.id = uid();
+        if (!it.createdAt) it.createdAt = new Date().toISOString();
+        items.push(it);
+      });
+      save(); updateCounts();
+      toast('Importate ' + list.length + ' esigenze');
+    } catch (err) { toast('Errore importazione: ' + err.message); }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+});
+
+$('btn-clear-all').addEventListener('click', () => {
+  if (items.length === 0) { toast('Nessun dato da eliminare'); return; }
+  if (!confirm('Eliminare TUTTE le ' + items.length + ' esigenze? L\'operazione è irreversibile.\n\nConsigliato: esporta prima in JSON.')) return;
+  items = [];
+  save(); updateCounts(); renderList(); renderPlan();
+  toast('Tutti i dati eliminati');
+});
+
+$('modal-close').addEventListener('click', () => $('modal').classList.remove('show'));
+
+// ============ INIT ============
+load();
+</script>
+</body>
+</html>
