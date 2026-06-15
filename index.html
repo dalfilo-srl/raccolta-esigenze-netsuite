@@ -96,6 +96,30 @@
     font-weight: 500;
   }
 
+  /* Sync status badge */
+  .sync-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    margin-top: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: var(--bg-card);
+    color: var(--ink-soft);
+  }
+  .sync-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ink-mute);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .sync-status.online .sync-dot { background: #3C8B5A; box-shadow: 0 0 0 3px rgba(60,139,90,0.15); }
+  .sync-status.offline .sync-dot { background: var(--gold); box-shadow: 0 0 0 3px rgba(181,139,60,0.15); }
+  .sync-status.error .sync-dot { background: var(--danger); box-shadow: 0 0 0 3px rgba(139,41,41,0.15); }
+
   /* Tabs */
   .tabs {
     display: flex;
@@ -514,6 +538,7 @@
     <div class="brand-mark">Dalfilo · Strumento Interno</div>
     <h1>Raccolta esigenze<br><em>OPS &amp; Finance</em> · NetSuite</h1>
     <p class="subtitle">Compila il modulo per descrivere come funziona oggi un processo in NetSuite e come dovrebbe funzionare. Le esigenze raccolte verranno trasformate in un piano di lavoro condiviso.</p>
+    <div class="sync-status" id="sync-status"><span class="sync-dot"></span><span id="sync-label">Connessione…</span></div>
   </div>
   <div class="header-meta">
     <div class="count-big" id="header-count">0</div>
@@ -686,7 +711,7 @@
       <button id="btn-clear-all" class="btn-danger">Azzera tutto</button>
     </div>
     <p style="font-size: 12px; color: var(--ink-mute); margin-top: 10px;">
-      I dati sono salvati nel browser locale. Esporta regolarmente in JSON per condividerli o conservarli.
+      I dati sono sincronizzati in tempo reale su Firebase e condivisi tra tutti i dispositivi. Esporta in JSON per conservare un backup.
     </p>
   </div>
 </section>
@@ -705,25 +730,56 @@
 
 </div>
 
-<script>
-const STORAGE_KEY = 'dalfilo.esigenze.v1';
+<script type="module">
+// ============ FIREBASE ============
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import {
+  getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot,
+  writeBatch, enableIndexedDbPersistence
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBkvOHUxe7VT_RNLNXGNS1l7aDHRarund8",
+  authDomain: "dalfilo-esigenze.firebaseapp.com",
+  projectId: "dalfilo-esigenze",
+  storageBucket: "dalfilo-esigenze.firebasestorage.app",
+  messagingSenderId: "946133401605",
+  appId: "1:946133401605:web:acd3064bd6e37c42789c6c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const COLL = 'esigenze';
+const esigenzeCol = collection(db, COLL);
+
+// Offline cache (best effort, ignora errori in multi-tab)
+try { await enableIndexedDbPersistence(db); } catch (e) { /* multi-tab o non supportato */ }
+
+const LOCAL_CACHE = 'dalfilo.esigenze.cache.v2';
 let items = [];
 let editingId = null;
+let firstSnapshot = false;
 
 const $ = id => document.getElementById(id);
 const $$ = sel => document.querySelectorAll(sel);
 
-// ============ STORAGE ============
-function load() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    items = raw ? JSON.parse(raw) : [];
-  } catch (e) { items = []; }
-  updateCounts();
+// ============ SYNC STATUS ============
+function setSync(state, label) {
+  const el = $('sync-status');
+  el.classList.remove('online','offline','error');
+  if (state) el.classList.add(state);
+  $('sync-label').textContent = label;
 }
-function save() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
-  catch (e) { toast('Errore di salvataggio'); }
+
+// ============ LOCAL CACHE (solo fallback di lettura) ============
+function readCache() {
+  try {
+    const raw = localStorage.getItem(LOCAL_CACHE);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+function writeCache() {
+  try { localStorage.setItem(LOCAL_CACHE, JSON.stringify(items)); } catch (e) {}
 }
 
 // ============ UTILS ============
@@ -737,6 +793,65 @@ function toast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ============ FIRESTORE WRITES ============
+async function upsertItem(item) {
+  await setDoc(doc(db, COLL, item.id), item);
+}
+async function deleteItem(id) {
+  await deleteDoc(doc(db, COLL, id));
+}
+async function clearAllRemote() {
+  // Firestore non ha "delete collection"; cancella documento per documento in batch
+  const snapshotItems = items.slice();
+  let batch = writeBatch(db);
+  let n = 0;
+  for (const it of snapshotItems) {
+    batch.delete(doc(db, COLL, it.id));
+    n++;
+    if (n % 400 === 0) { await batch.commit(); batch = writeBatch(db); }
+  }
+  await batch.commit();
+}
+async function importItems(list) {
+  let batch = writeBatch(db);
+  let n = 0;
+  for (const it of list) {
+    if (!it.id) it.id = uid();
+    if (!it.createdAt) it.createdAt = new Date().toISOString();
+    batch.set(doc(db, COLL, it.id), it);
+    n++;
+    if (n % 400 === 0) { await batch.commit(); batch = writeBatch(db); }
+  }
+  await batch.commit();
+}
+
+// ============ REALTIME LISTENER ============
+function startListener() {
+  setSync('offline', 'Connessione…');
+  onSnapshot(esigenzeCol,
+    (snap) => {
+      items = [];
+      snap.forEach(d => items.push(d.data()));
+      writeCache();
+      firstSnapshot = true;
+      const fromCache = snap.metadata.fromCache;
+      setSync(fromCache ? 'offline' : 'online', fromCache ? 'Offline · dati locali' : 'Sincronizzato');
+      updateCounts();
+      if (!$('view-list').classList.contains('hidden')) renderList();
+      if (!$('view-plan').classList.contains('hidden')) renderPlan();
+    },
+    (err) => {
+      console.error('Firestore error', err);
+      setSync('error', 'Errore sync · uso cache locale');
+      if (!firstSnapshot) {
+        items = readCache();
+        updateCounts();
+      }
+      toast('Errore di sincronizzazione: ' + (err.code || err.message));
+    }
+  );
 }
 
 // ============ TABS ============
@@ -789,7 +904,7 @@ function fillForm(item) {
   window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
-$('btn-save').addEventListener('click', () => {
+$('btn-save').addEventListener('click', async () => {
   const data = {
     dept: $('f-dept').value,
     author: $('f-author').value.trim(),
@@ -804,26 +919,34 @@ $('btn-save').addEventListener('click', () => {
     toast('Compila almeno: Dipartimento, Titolo e Priorità');
     return;
   }
-  if (editingId) {
-    const idx = items.findIndex(x => x.id === editingId);
-    if (idx >= 0) items[idx] = Object.assign({}, items[idx], data, {updatedAt: new Date().toISOString()});
-    toast('Esigenza aggiornata');
-  } else {
-    data.id = uid();
-    data.createdAt = new Date().toISOString();
-    items.push(data);
-    toast('Esigenza salvata');
+  $('btn-save').disabled = true;
+  try {
+    if (editingId) {
+      const existing = items.find(x => x.id === editingId) || {};
+      const merged = Object.assign({}, existing, data, { id: editingId, updatedAt: new Date().toISOString() });
+      if (!merged.createdAt) merged.createdAt = new Date().toISOString();
+      await upsertItem(merged);
+      toast('Esigenza aggiornata');
+    } else {
+      data.id = uid();
+      data.createdAt = new Date().toISOString();
+      await upsertItem(data);
+      toast('Esigenza salvata');
+    }
+    clearForm();
+    // Switch to list
+    $$('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelector('[data-tab="list"]').classList.add('active');
+    $('view-form').classList.add('hidden');
+    $('view-list').classList.remove('hidden');
+    $('view-plan').classList.add('hidden');
+    renderList();
+  } catch (err) {
+    console.error(err);
+    toast('Errore di salvataggio: ' + (err.code || err.message));
+  } finally {
+    $('btn-save').disabled = false;
   }
-  save();
-  updateCounts();
-  clearForm();
-  // Switch to list
-  $$('.tab').forEach(x => x.classList.remove('active'));
-  document.querySelector('[data-tab="list"]').classList.add('active');
-  $('view-form').classList.add('hidden');
-  $('view-list').classList.remove('hidden');
-  $('view-plan').classList.add('hidden');
-  renderList();
 });
 
 $('btn-cancel').addEventListener('click', clearForm);
@@ -890,11 +1013,15 @@ function renderList() {
     const it = items.find(x => x.id === b.dataset.edit);
     if (it) fillForm(it);
   }));
-  container.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+  container.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', async () => {
     if (!confirm('Eliminare questa esigenza?')) return;
-    items = items.filter(x => x.id !== b.dataset.del);
-    save(); updateCounts(); renderList();
-    toast('Esigenza eliminata');
+    try {
+      await deleteItem(b.dataset.del);
+      toast('Esigenza eliminata');
+    } catch (err) {
+      console.error(err);
+      toast('Errore eliminazione: ' + (err.code || err.message));
+    }
   }));
 }
 
@@ -996,18 +1123,13 @@ $('file-import').addEventListener('change', e => {
   const f = e.target.files[0];
   if (!f) return;
   const r = new FileReader();
-  r.onload = ev => {
+  r.onload = async ev => {
     try {
       const data = JSON.parse(ev.target.result);
       const list = Array.isArray(data) ? data : (data.items || []);
       if (!Array.isArray(list)) throw new Error('formato non valido');
-      if (!confirm('Importare ' + list.length + ' esigenze? Verranno aggiunte a quelle esistenti.')) return;
-      list.forEach(it => {
-        if (!it.id) it.id = uid();
-        if (!it.createdAt) it.createdAt = new Date().toISOString();
-        items.push(it);
-      });
-      save(); updateCounts();
+      if (!confirm('Importare ' + list.length + ' esigenze? Verranno aggiunte a quelle esistenti su Firebase.')) return;
+      await importItems(list);
       toast('Importate ' + list.length + ' esigenze');
     } catch (err) { toast('Errore importazione: ' + err.message); }
   };
@@ -1015,18 +1137,24 @@ $('file-import').addEventListener('change', e => {
   e.target.value = '';
 });
 
-$('btn-clear-all').addEventListener('click', () => {
+$('btn-clear-all').addEventListener('click', async () => {
   if (items.length === 0) { toast('Nessun dato da eliminare'); return; }
-  if (!confirm('Eliminare TUTTE le ' + items.length + ' esigenze? L\'operazione è irreversibile.\n\nConsigliato: esporta prima in JSON.')) return;
-  items = [];
-  save(); updateCounts(); renderList(); renderPlan();
-  toast('Tutti i dati eliminati');
+  if (!confirm('Eliminare TUTTE le ' + items.length + ' esigenze da Firebase? L\'operazione è irreversibile e cancella i dati per tutti gli utenti.\n\nConsigliato: esporta prima in JSON.')) return;
+  try {
+    await clearAllRemote();
+    toast('Tutti i dati eliminati');
+  } catch (err) {
+    console.error(err);
+    toast('Errore eliminazione: ' + (err.code || err.message));
+  }
 });
 
 $('modal-close').addEventListener('click', () => $('modal').classList.remove('show'));
 
 // ============ INIT ============
-load();
+items = readCache();      // mostra subito la cache locale mentre Firestore si connette
+updateCounts();
+startListener();          // avvia la sincronizzazione realtime
 </script>
 </body>
 </html>
